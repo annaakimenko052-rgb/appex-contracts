@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
 
     doc.render(templateData)
 
-    const buf = doc.getZip().generate({ type: 'nodebuffer', compression: 'DEFLATE' }) as Buffer
-
+    const bufferData = doc.getZip().generate({ type: 'nodebuffer', compression: 'DEFLATE' })
+    const buf = bufferData as unknown as Buffer
     return new NextResponse(buf, {
       status: 200,
       headers: {
