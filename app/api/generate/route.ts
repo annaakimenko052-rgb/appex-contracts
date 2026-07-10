@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const { contractType, docType, formData } = body
 
     const templatePath = join(process.cwd(), 'templates', contractType, `${docType}.docx`)
-    
+
     if (!existsSync(templatePath)) {
       return NextResponse.json({ error: `Шаблон не найден: ${contractType}/${docType}.docx` }, { status: 404 })
     }
@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
     const templateData = {
       ...formData,
       contract_date_formatted: contractDate,
-      // Реквизиты исполнителя (автоподстановка)
       executor_name: EXECUTOR.name,
       executor_unp: EXECUTOR.unp,
       executor_director_name: EXECUTOR.director_name,
@@ -51,13 +50,13 @@ export async function POST(req: NextRequest) {
 
     doc.render(templateData)
 
-    const buf = doc.getZip().generate({ type: 'nodebuffer', compression: 'DEFLATE' })
+    const buf = doc.getZip().generate({ type: 'nodebuffer', compression: 'DEFLATE' }) as Buffer
 
     return new NextResponse(buf, {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'Content-Disposition': `attachment; filename="${contractType}_${docType}_${formData.contract_number || 'draft'}.docx"`,
+        'Content-Disposition': `attachment; filename=\"${contractType}_${docType}_${formData.contract_number || 'draft'}.docx\"`,
       },
     })
   } catch (error) {
